@@ -26,9 +26,9 @@
 
 package parser.ast;
 
-import param.BigRational;
 import parser.EvaluateContext;
 import parser.visitor.ASTVisitor;
+import parser.visitor.DeepCopy;
 import prism.PrismLangException;
 
 public class ExpressionTemporal extends Expression
@@ -256,12 +256,6 @@ public class ExpressionTemporal extends Expression
 	}
 
 	@Override
-	public BigRational evaluateExact(EvaluateContext ec) throws PrismLangException
-	{
-		throw new PrismLangException("Cannot evaluate a temporal operator without a path");
-	}
-
-	@Override
 	public boolean returnsSingleValue()
 	{
 		return false;
@@ -276,20 +270,20 @@ public class ExpressionTemporal extends Expression
 	}
 
 	@Override
-	public Expression deepCopy()
+	public ExpressionTemporal deepCopy(DeepCopy copier) throws PrismLangException
 	{
-		ExpressionTemporal expr = new ExpressionTemporal();
-		expr.setOperator(op);
-		if (operand1 != null)
-			expr.setOperand1(operand1.deepCopy());
-		if (operand2 != null)
-			expr.setOperand2(operand2.deepCopy());
-		expr.setLowerBound(lBound == null ? null : lBound.deepCopy(), lBoundStrict);
-		expr.setUpperBound(uBound == null ? null : uBound.deepCopy(), uBoundStrict);
-		expr.equals = equals;
-		expr.setType(type);
-		expr.setPosition(this);
-		return expr;
+		operand1 = copier.copy(operand1);
+		operand2 = copier.copy(operand2);
+		lBound = copier.copy(lBound);
+		uBound = copier.copy(uBound);
+
+		return this;
+	}
+
+	@Override
+	public ExpressionTemporal clone()
+	{
+		return (ExpressionTemporal) super.clone();
 	}
 
 	// Standard methods

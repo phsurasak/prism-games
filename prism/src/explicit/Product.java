@@ -41,7 +41,7 @@ import prism.PrismException;
  *
  * @param <M> The type of the product model, e.g, DTMC, MDP, ...
  */
-public abstract class Product<M extends Model> implements ModelTransformation<M, M>
+public abstract class Product<M extends Model<?>> implements ModelTransformation<M, M>
 {
 	protected M originalModel = null;
 	protected M productModel = null;
@@ -57,6 +57,11 @@ public abstract class Product<M extends Model> implements ModelTransformation<M,
 	 * state index in the automaton.
 	 */
 	public abstract int getAutomatonState(int productState);
+
+	/**
+	 * Return the number of states in the automaton.
+	 */
+	public abstract int getAutomatonSize();
 
 	/**
 	 * Constructor.

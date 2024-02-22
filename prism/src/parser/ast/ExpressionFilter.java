@@ -26,13 +26,13 @@
 
 package parser.ast;
 
-import param.BigRational;
 import parser.EvaluateContext;
 import parser.type.Type;
 import parser.type.TypeBool;
 import parser.type.TypeDouble;
 import parser.type.TypeInt;
 import parser.visitor.ASTVisitor;
+import parser.visitor.DeepCopy;
 import prism.Accuracy;
 import prism.PrismException;
 import prism.PrismLangException;
@@ -464,12 +464,6 @@ public class ExpressionFilter extends Expression
 	}
 
 	@Override
-	public BigRational evaluateExact(EvaluateContext ec) throws PrismLangException
-	{
-		throw new PrismLangException("Cannot evaluate a filter without a model");
-	}
-
-	@Override
 	public boolean returnsSingleValue()
 	{
 		// Most filters return a single value, but there are some exceptions...
@@ -491,16 +485,18 @@ public class ExpressionFilter extends Expression
 	}
 
 	@Override
-	public Expression deepCopy()
+	public ExpressionFilter deepCopy(DeepCopy copier) throws PrismLangException
 	{
-		ExpressionFilter e;
-		e = new ExpressionFilter(opName, operand.deepCopy(), filter == null ? null : filter.deepCopy());
-		e.setInvisible(invisible);
-		e.setType(type);
-		e.setPosition(this);
-		e.param = this.param;
+		operand = copier.copy(operand);
+		filter = copier.copy(filter);
 
-		return e;
+		return this;
+	}
+
+	@Override
+	public ExpressionFilter clone()
+	{
+		return (ExpressionFilter) super.clone();
 	}
 	
 	// Standard methods

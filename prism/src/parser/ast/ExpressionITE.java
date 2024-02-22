@@ -26,10 +26,11 @@
 
 package parser.ast;
 
-import param.BigRational;
-import parser.*;
+import parser.EvaluateContext;
+import parser.EvaluateContext.EvalMode;
 import parser.type.TypeBool;
-import parser.visitor.*;
+import parser.visitor.ASTVisitor;
+import parser.visitor.DeepCopy;
 import prism.PrismLangException;
 
 public class ExpressionITE extends Expression
@@ -99,25 +100,19 @@ public class ExpressionITE extends Expression
 	@Override
 	public Object evaluate(EvaluateContext ec) throws PrismLangException
 	{
+		// Note that we don't use apply(...) because we want short-circuiting
 		Object eval1 = operand1.evaluate(ec);
-		Object eval2 = operand2.evaluate(ec);
-		Object eval3 = operand3.evaluate(ec);
-		return apply(eval1, eval2, eval3);
-	}
-
-	@Override
-	public BigRational evaluateExact(EvaluateContext ec) throws PrismLangException
-	{
-		return operand1.evaluateExact(ec).toBoolean() ? operand2.evaluateExact(ec) : operand3.evaluateExact(ec);
+		boolean b = TypeBool.getInstance().castValueTo(eval1);
+		return getType().castValueTo(b ? operand2.evaluate(ec) : operand3.evaluate(ec), ec.getEvaluationMode());
 	}
 
 	/**
 	 * Apply this ITE operator instance to the arguments provided
 	 */
-	public Object apply(Object eval1, Object eval2, Object eval3) throws PrismLangException
+	public Object apply(Object eval1, Object eval2, Object eval3, EvalMode evalMode) throws PrismLangException
 	{
 		boolean b = TypeBool.getInstance().castValueTo(eval1);
-		return getType().castValueTo(b ? eval2 : eval3);
+		return getType().castValueTo(b ? eval2 : eval3, evalMode);
 	}
 	
 	@Override
@@ -135,12 +130,19 @@ public class ExpressionITE extends Expression
 	}
 
 	@Override
-	public Expression deepCopy()
+	public ExpressionITE deepCopy(DeepCopy copier) throws PrismLangException
 	{
-		ExpressionITE expr = new ExpressionITE(operand1.deepCopy(), operand2.deepCopy(), operand3.deepCopy());
-		expr.setType(type);
-		expr.setPosition(this);
-		return expr;
+		operand1 = copier.copy(operand1);
+		operand2 = copier.copy(operand2);
+		operand3 = copier.copy(operand3);
+
+		return this;
+	}
+
+	@Override
+	public ExpressionITE clone()
+	{
+		return (ExpressionITE) super.clone();
 	}
 
 	// Standard methods
