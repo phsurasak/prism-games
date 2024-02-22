@@ -2,10 +2,10 @@ package prism;
 
 public class Version
 {
-	/** PRISM extension version (e.g. "2.0"). Just a single string (will be extracted by scripts). */
-	public static String versionExtensionString = "3.2.1";
+	/** PRISM extension version (e.g. "3.2.1"). Just a single string (will be extracted by scripts). */
+	public static String versionExtensionString = "3.2";
 	/** Optional PRISM extension version suffix (e.g. "", "dev", "beta"). Just a single string (will be extracted by scripts). */
-	public static String versionExtensionSuffixString = "";
+	public static String versionExtensionSuffixString = "surasak 😬";
 	
 	/** PRISM version (e.g. "4.0.3"). Just a single string (will be extracted by scripts). */
 	public static String versionString = "4.8";
